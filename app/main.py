@@ -8,7 +8,7 @@ from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
 
 from app.game_service import GameSession, get_session
-from app.models import GameState
+from app.models import GameMode, GameState
 
 BASE_DIR = Path(__file__).resolve().parent
 
@@ -32,7 +32,7 @@ async def home(request: Request) -> Response:
     return templates.TemplateResponse(
         request,
         "home.html",
-        {"session": session, "GameState": GameState},
+        {"session": session, "GameState": GameState, "GameMode": GameMode},
     )
 
 
@@ -40,18 +40,41 @@ async def home(request: Request) -> Response:
 async def start_game(request: Request) -> Response:
     session = _get_game_session(request)
     session.start_game()
-    return templates.TemplateResponse(
-        request, "components/game_screen.html", {"session": session}
+    template = (
+        "components/scavenger_hunt_screen.html"
+        if session.game_mode == GameMode.SCAVENGER_HUNT
+        else "components/game_screen.html"
     )
+    return templates.TemplateResponse(request, template, {"session": session})
 
 
-@app.post("/toggle/{square_id}", response_class=HTMLResponse)
-async def toggle_square(request: Request, square_id: int) -> Response:
+@app.post("/start/{mode}", response_class=HTMLResponse)
+async def start_game_with_mode(request: Request, mode: str) -> Response:
     session = _get_game_session(request)
-    session.handle_square_click(square_id)
-    return templates.TemplateResponse(
-        request, "components/game_screen.html", {"session": session}
+    game_mode = GameMode(mode)
+    session.start_game(mode=game_mode)
+    template = (
+        "components/scavenger_hunt_screen.html"
+        if game_mode == GameMode.SCAVENGER_HUNT
+        else "components/game_screen.html"
     )
+    return templates.TemplateResponse(request, template, {"session": session})
+
+
+@app.post("/toggle/{item_id}", response_class=HTMLResponse)
+async def toggle_square(request: Request, item_id: str) -> Response:
+    session = _get_game_session(request)
+
+    if session.game_mode == GameMode.BINGO:
+        # For bingo, item_id is an integer index
+        session.handle_square_click(int(item_id))
+        template = "components/game_screen.html"
+    else:  # SCAVENGER_HUNT
+        # For scavenger hunt, item_id is a string
+        session.handle_scavenger_toggle(item_id)
+        template = "components/scavenger_hunt_screen.html"
+
+    return templates.TemplateResponse(request, template, {"session": session})
 
 
 @app.post("/reset", response_class=HTMLResponse)

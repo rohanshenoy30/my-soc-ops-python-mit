@@ -10,6 +10,11 @@ class GameState(StrEnum):
     BINGO = "bingo"
 
 
+class GameMode(StrEnum):
+    BINGO = "bingo"
+    SCAVENGER_HUNT = "scavenger_hunt"
+
+
 class BingoSquareData(BaseModel):
     """A single square on the bingo board."""
 
@@ -19,6 +24,16 @@ class BingoSquareData(BaseModel):
     text: str
     is_marked: bool = False
     is_free_space: bool = False
+
+
+class ScavengerItem(BaseModel):
+    """A single item in the scavenger hunt list."""
+
+    model_config = ConfigDict(frozen=True)
+
+    id: str
+    text: str
+    is_marked: bool = False
 
 
 class BingoLine(BaseModel):

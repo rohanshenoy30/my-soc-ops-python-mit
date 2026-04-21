@@ -132,3 +132,188 @@ class TestGetWinningSquareIds:
     def test_returns_square_ids(self):
         line = BingoLine(type="row", index=0, squares=[0, 1, 2, 3, 4])
         assert get_winning_square_ids(line) == {0, 1, 2, 3, 4}
+
+
+class TestGenerateScavengerItems:
+    """Tests for the scavenger hunt item generation."""
+
+    def test_generates_24_items(self):
+        from app.game_logic import generate_scavenger_items
+
+        items = generate_scavenger_items()
+        assert len(items) == 24
+
+    def test_all_items_are_from_question_pool(self):
+        from app.game_logic import generate_scavenger_items
+
+        items = generate_scavenger_items()
+        texts = {item.text for item in items}
+        assert texts.issubset(set(QUESTIONS))
+
+    def test_items_are_not_duplicated(self):
+        from app.game_logic import generate_scavenger_items
+
+        items = generate_scavenger_items()
+        texts = [item.text for item in items]
+        assert len(texts) == len(set(texts))
+
+    def test_items_have_sequential_ids(self):
+        from app.game_logic import generate_scavenger_items
+
+        items = generate_scavenger_items()
+        for i, item in enumerate(items):
+            assert item.id == str(i) or item.id == i
+
+    def test_items_initially_unmarked(self):
+        from app.game_logic import generate_scavenger_items
+
+        items = generate_scavenger_items()
+        for item in items:
+            assert item.is_marked is False
+
+    def test_no_free_space_item(self):
+        from app.game_logic import generate_scavenger_items
+
+        items = generate_scavenger_items()
+        texts = {item.text for item in items}
+        assert "FREE SPACE" not in texts
+
+    def test_items_are_shuffled(self):
+        """Verify two item lists aren't identical (high probability)."""
+        from app.game_logic import generate_scavenger_items
+
+        items1 = generate_scavenger_items()
+        items2 = generate_scavenger_items()
+        texts1 = [item.text for item in items1]
+        texts2 = [item.text for item in items2]
+        # Extremely unlikely to be identical
+        assert texts1 != texts2
+
+
+class TestScavengerItemModel:
+    """Tests for the ScavengerItem data model."""
+
+    def test_scavenger_item_creation(self):
+        from app.models import ScavengerItem
+
+        item = ScavengerItem(id="0", text="has a pet", is_marked=False)
+        assert item.id == "0"
+        assert item.text == "has a pet"
+        assert item.is_marked is False
+
+    def test_scavenger_item_can_be_marked(self):
+        from app.models import ScavengerItem
+
+        item = ScavengerItem(id="0", text="has a pet", is_marked=True)
+        assert item.is_marked is True
+
+
+class TestGameModeModel:
+    """Tests for the GameMode enum."""
+
+    def test_game_mode_enum_exists(self):
+        from app.models import GameMode
+
+        assert hasattr(GameMode, "BINGO")
+        assert hasattr(GameMode, "SCAVENGER_HUNT")
+
+    def test_game_mode_values(self):
+        from app.models import GameMode
+
+        assert GameMode.BINGO == "bingo"
+        assert GameMode.SCAVENGER_HUNT == "scavenger_hunt"
+
+
+class TestGameSessionScavengerHunt:
+    """Tests for GameSession scavenger hunt methods."""
+
+    def test_start_scavenger_hunt_mode(self):
+        from app.game_service import GameSession
+        from app.models import GameMode
+
+        session = GameSession()
+        session.start_game(mode=GameMode.SCAVENGER_HUNT)
+        assert session.game_mode == GameMode.SCAVENGER_HUNT
+        assert len(session.scavenger_items) == 24
+
+    def test_start_game_preserves_bingo_mode(self):
+        from app.game_service import GameSession
+        from app.models import GameMode
+
+        session = GameSession()
+        session.start_game(mode=GameMode.BINGO)
+        assert session.game_mode == GameMode.BINGO
+        assert len(session.board) == 25
+        assert len(session.scavenger_items) == 0
+
+    def test_handle_scavenger_toggle_marks_item(self):
+        from app.game_service import GameSession
+        from app.models import GameMode
+
+        session = GameSession()
+        session.start_game(mode=GameMode.SCAVENGER_HUNT)
+        assert session.scavenger_items[0].is_marked is False
+        session.handle_scavenger_toggle("0")
+        assert session.scavenger_items[0].is_marked is True
+
+    def test_handle_scavenger_toggle_unmarks_item(self):
+        from app.game_service import GameSession
+        from app.models import GameMode
+
+        session = GameSession()
+        session.start_game(mode=GameMode.SCAVENGER_HUNT)
+        session.handle_scavenger_toggle("0")
+        assert session.scavenger_items[0].is_marked is True
+        session.handle_scavenger_toggle("0")
+        assert session.scavenger_items[0].is_marked is False
+
+    def test_handle_scavenger_toggle_multiple_items(self):
+        from app.game_service import GameSession
+        from app.models import GameMode
+
+        session = GameSession()
+        session.start_game(mode=GameMode.SCAVENGER_HUNT)
+        session.handle_scavenger_toggle("0")
+        session.handle_scavenger_toggle("5")
+        session.handle_scavenger_toggle("10")
+        assert session.scavenger_items[0].is_marked is True
+        assert session.scavenger_items[5].is_marked is True
+        assert session.scavenger_items[10].is_marked is True
+
+
+class TestScavengerProgress:
+    """Tests for scavenger hunt progress tracking."""
+
+    def test_get_scavenger_progress_initial(self):
+        from app.game_service import GameSession
+        from app.models import GameMode
+
+        session = GameSession()
+        session.start_game(mode=GameMode.SCAVENGER_HUNT)
+        marked, total = session.get_scavenger_progress()
+        assert marked == 0
+        assert total == 24
+
+    def test_get_scavenger_progress_after_marking(self):
+        from app.game_service import GameSession
+        from app.models import GameMode
+
+        session = GameSession()
+        session.start_game(mode=GameMode.SCAVENGER_HUNT)
+        session.handle_scavenger_toggle("0")
+        session.handle_scavenger_toggle("5")
+        marked, total = session.get_scavenger_progress()
+        assert marked == 2
+        assert total == 24
+
+    def test_get_scavenger_progress_all_marked(self):
+        from app.game_service import GameSession
+        from app.models import GameMode
+
+        session = GameSession()
+        session.start_game(mode=GameMode.SCAVENGER_HUNT)
+        for i in range(24):
+            session.handle_scavenger_toggle(str(i))
+        marked, total = session.get_scavenger_progress()
+        assert marked == 24
+        assert total == 24

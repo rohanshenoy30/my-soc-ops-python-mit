@@ -1,0 +1,11 @@
+<!-- Progress meter for scavenger hunt -->
+<div class="mb-8">
+    <div class="flex items-center justify-between mb-3">
+        <h3 class="text-lg font-bold glow-cyan neon-text">PROGRESS</h3>
+        <div class="text-xl font-bold glow-lime neon-text">{{ marked }}/{{ total }} FOUND</div>
+    </div>
+    <div style="background-color: var(--arcade-dark-2); border: 2px solid var(--neon-cyan); height: 16px; border-radius: 4px; overflow: hidden; box-shadow: 0 0 10px var(--neon-cyan);">
+        <div style="width: {{ (marked / total * 100)|int }}%; height: 100%; background-color: var(--neon-lime); transition: width 0.3s ease; box-shadow: 0 0 8px var(--neon-lime);">
+        </div>
+    </div>
+</div>

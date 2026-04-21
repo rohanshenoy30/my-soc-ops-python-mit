@@ -2,7 +2,7 @@ import functools
 import random
 
 from app.data import FREE_SPACE, QUESTIONS
-from app.models import BingoLine, BingoSquareData
+from app.models import BingoLine, BingoSquareData, ScavengerItem
 
 BOARD_SIZE = 5
 CENTER_INDEX = 12  # 5x5 grid, center is index 12 (row 2, col 2)
@@ -16,6 +16,15 @@ def generate_board() -> list[BingoSquareData]:
         if i == CENTER_INDEX
         else BingoSquareData(id=i, text=next(questions))
         for i in range(BOARD_SIZE * BOARD_SIZE)
+    ]
+
+
+def generate_scavenger_items() -> list[ScavengerItem]:
+    """Generate a new scavenger hunt items list (24 items, no free space)."""
+    questions = random.sample(QUESTIONS, 24)
+    return [
+        ScavengerItem(id=str(i), text=question, is_marked=False)
+        for i, question in enumerate(questions)
     ]
 
 
