@@ -400,6 +400,200 @@ button:active .active\:bg-accent-light { background-color: rgba(255, 0, 153, 0.8
     animation: glow-pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
+/* ===== LANDING PAGE ANIMATIONS ===== */
+
+/* Staggered section reveals */
+@keyframes slide-up-fade {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes subtle-glow-pulse {
+    0%, 100% {
+        filter: brightness(1) drop-shadow(0 0 15px rgba(0, 255, 255, 0.3));
+    }
+    50% {
+        filter: brightness(1.1) drop-shadow(0 0 25px rgba(0, 255, 255, 0.5));
+    }
+}
+
+@keyframes grid-drift {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: 40px 40px;
+    }
+}
+
+@keyframes gradient-shift {
+    0%, 100% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+/* Landing section animations */
+.animate-slide-up {
+    animation: slide-up-fade 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    opacity: 0;
+}
+
+.animate-subtle-glow {
+    animation: subtle-glow-pulse 3s ease-in-out infinite;
+}
+
+.animate-grid-drift {
+    animation: grid-drift 20s linear infinite;
+}
+
+/* Stagger delays for sequential reveals */
+.stagger-1 { animation-delay: 0.1s; }
+.stagger-2 { animation-delay: 0.3s; }
+.stagger-3 { animation-delay: 0.5s; }
+.stagger-4 { animation-delay: 0.7s; }
+.stagger-5 { animation-delay: 0.9s; }
+
+/* Landing page specific utilities */
+.landing-hero {
+    position: relative;
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    overflow: hidden;
+}
+
+.landing-section {
+    padding: 4rem 2rem;
+    position: relative;
+    z-index: 1;
+}
+
+.landing-accent-shape {
+    position: absolute;
+    opacity: 0.1;
+    pointer-events: none;
+}
+
+.landing-accent-shape.triangle {
+    width: 0;
+    height: 0;
+    border-left: 40px solid transparent;
+    border-right: 40px solid transparent;
+    border-bottom: 70px solid var(--neon-pink);
+}
+
+/* Feature card hover effect */
+.feature-card {
+    position: relative;
+    transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 0.5rem;
+}
+
+.feature-card:hover {
+    box-shadow: 
+        0 0 20px rgba(0, 255, 255, 0.4),
+        0 0 40px rgba(255, 0, 153, 0.2) !important;
+    transform: translateY(-4px);
+}
+
+/* Question item styling */
+.question-item {
+    padding: 1rem;
+    border-left: 3px solid var(--neon-cyan);
+    background-color: rgba(0, 255, 255, 0.05);
+    border-radius: 0.25rem;
+    transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.question-item:hover {
+    border-left-color: var(--neon-pink);
+    background-color: rgba(255, 0, 153, 0.1);
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+}
+
+/* Animated background grid overlay */
+.landing-grid-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0.05;
+    pointer-events: none;
+    background-image: 
+        linear-gradient(0deg, var(--neon-cyan) 1px, transparent 1px),
+        linear-gradient(90deg, var(--neon-cyan) 1px, transparent 1px);
+    background-size: 40px 40px;
+    animation: grid-drift 30s linear infinite;
+    z-index: 0;
+}
+
+/* Sample board preview styles */
+.preview-board-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    margin: 1rem 0;
+}
+
+.preview-square-small {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 1 / 1;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    border-radius: 2px;
+    transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.preview-square-small.unmarked {
+    background-color: var(--arcade-dark-3);
+    border: 2px solid var(--neon-cyan);
+    color: var(--neon-cyan);
+    box-shadow: inset 0 0 8px rgba(0, 255, 255, 0.2);
+}
+
+.preview-square-small.marked {
+    background-color: rgba(0, 255, 0, 0.15);
+    border: 2px solid var(--neon-lime);
+    color: var(--neon-lime);
+    box-shadow: 
+        inset 0 0 8px rgba(0, 255, 0, 0.3),
+        0 0 12px rgba(0, 255, 0, 0.3);
+}
+
+.preview-square-small.winning {
+    background-color: rgba(255, 0, 153, 0.2);
+    border: 2px solid var(--neon-pink);
+    color: var(--neon-pink);
+    box-shadow: 
+        inset 0 0 10px rgba(255, 0, 153, 0.4),
+        0 0 20px rgba(255, 0, 153, 0.5);
+    animation: glow-pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.preview-square-small.free-space {
+    background-color: rgba(0, 255, 0, 0.2);
+    border: 2px dashed var(--neon-lime);
+    color: var(--neon-lime);
+    font-size: 0.6rem;
+}
+
 /* ===== ACCESSIBILITY: Reduce Motion ===== */
 @media (prefers-reduced-motion: reduce) {
     * {

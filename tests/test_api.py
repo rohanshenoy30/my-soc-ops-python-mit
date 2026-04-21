@@ -18,7 +18,7 @@ class TestHomePage:
         response = client.get("/")
         assert "Soc Ops" in response.text
         assert "START GAME" in response.text
-        assert "HOW TO PLAY" in response.text
+        assert "SOCIAL BINGO" in response.text
 
     def test_home_sets_session_cookie(self, client: TestClient):
         response = client.get("/")
@@ -58,7 +58,7 @@ class TestResetGame:
         response = client.post("/reset")
         assert response.status_code == 200
         assert "START GAME" in response.text
-        assert "HOW TO PLAY" in response.text
+        assert "SOCIAL BINGO" in response.text
 
 
 class TestDismissModal:
