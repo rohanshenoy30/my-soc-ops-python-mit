@@ -64,7 +64,73 @@ A new game mode where players tap a button to reveal random icebreaker questions
 - Animation utilities for movement/effects
 - Responsive layout: flexbox, centered on all screen sizes
 
-## Implementation Checklist
+## Cyberpunk 3D Flip Enhancement (v2)
+
+### 3D Flip Animation
+- **card-flip-in**: Complex 3D entrance animation
+  - Rotates on Y-axis (90° → 0°) and X-axis (10° → 0°)
+  - Scale transition (0.7 → 1.0) with blur effect
+  - Duration: 0.7s with cubic-bezier easing
+  - Creates illusion of card tumbling into view
+
+### Cyberpunk Visual Effects
+
+#### Multi-Layered Glow System
+- **Primary glow**: Plasma pink/cyan rings at multiple distances
+- **Secondary glow**: Purple/cyan mid-range glow (50-100px radius)
+- **Inset glow**: Rim lighting from inside card for depth
+- **Animated pulse**: 4s cycle with intensity/color shifts
+  - Cycles through pink → cyan → purple color emphasis
+  - Simulates cyberpunk "power core" effect
+
+#### Scan Line & Glitch Effects
+- **Scanline flicker**: 0.15s rapid opacity pulse (95-100%)
+- **Data glitch**: Text shadow corruption with color shifts
+  - Alternates between cyan/lime and purple/orange shifts
+  - 3s cycle creates "data stream" feeling
+
+#### Border Plasma Effect
+- Corner accent brackets (top-left, bottom-right)
+- Animated color rotation through plasma spectrum
+- 6s cycle with hue rotation
+
+### Interactive UI Enhancements
+- **Card is now clickable**: Tap card directly to flip to next
+- **Tap feedback**: Active state scale-down (0.97)
+- **Hover state**: Scale up (1.03) + enhanced glow
+- **Depth effect**: translateZ(40px) on hover
+- **Instruction text**: 
+  - Added tap hints ("▲ FIND SOMEONE WHO ▲")
+  - Glitch animation on instruction text
+  - Cyberpunk typography (△ and ▼ decorators)
+
+### Question Box Styling
+- Lime green border frame around question
+- Dynamic glow that pulses with card
+- Layered text shadow:
+  - Lime primary with 30px glow
+  - Cyan secondary accent
+  - Pink/cyan flanking shadows for depth
+- Improved line-height (1.5) for readability
+
+### CSS Structure
+- **430+ lines** of animation and styling additions
+- **7 new keyframe animations**:
+  - `card-flip-in`, `card-flip-out`
+  - `cyberpunk-glow-pulse`, `scanline-flicker`
+  - `data-glitch`, `plasma-border`
+- **30+ custom properties** for layered effects
+- Organized with comments for maintainability
+
+### Performance Considerations
+- All CSS animations use GPU acceleration
+- Background grid patterns use low-opacity overlays
+- Scanline effect is subtle (0.15s flicker, 0.05 opacity)
+- Hover/active states use simple transforms
+- HTMX swaps are 0.3s to match flip animation timing
+
+---
+*3D & Cyberpunk enhancements complete — Ready for visual testing*
 - [x] Add `CARD_DECK_SHUFFLE` to GameMode enum
 - [x] Extend GameSession to track card state (shuffled questions, current index)
 - [x] Create `get_current_card()` and `next_card()` methods

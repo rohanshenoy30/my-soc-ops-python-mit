@@ -1,39 +1,44 @@
 <div id="game-container">
 <div class="flex flex-col min-h-full">
-    <!-- Header -->
-    <header class="flex items-center justify-between p-3 arcade-border rounded-t-lg border-b border-gray-300">
+    <!-- Cyberpunk Header -->
+    <header class="flex items-center justify-between p-3 arcade-border rounded-t-lg border-b border-gray-300 relative" style="background: linear-gradient(90deg, rgba(157, 0, 255, 0.1), rgba(0, 255, 255, 0.05));">
         <button
             hx-post="/reset"
             hx-target="#game-container"
             hx-swap="outerHTML"
             class="text-neon-cyan text-sm px-3 py-1.5 rounded neon-text font-bold hover:glow-cyan transition-all">
-            ◀ BACK
+            ◀◀ EXIT
         </button>
-        <h1 class="font-bold glow-pink neon-text text-lg">CARD DECK SHUFFLE</h1>
+        <h1 class="font-bold glow-pink neon-text text-lg" style="text-transform: uppercase; letter-spacing: 3px;">
+            ▲ CARD DECK SHUFFLE ▼
+        </h1>
         <div class="w-16"></div>
     </header>
 
-    <!-- Instructions -->
-    <p class="text-center glow-cyan text-sm py-2 px-4 neon-text">
-        TAP CARD OR BUTTON TO SHUFFLE
+    <!-- Cyberpunk Instructions -->
+    <p class="text-center glow-cyan text-xs py-3 px-4 neon-text" style="letter-spacing: 2px; animation: data-glitch 3s ease-in-out infinite;">
+        ⚡ TAP CARD OR BUTTON TO REVEAL ⚡
     </p>
 
-    <!-- Card display area -->
-    <div class="flex-1 flex flex-col items-center justify-center p-4 arcade-border rounded-b-lg m-2">
-        <div id="card-display" hx-target="this" hx-swap="innerHTML swap:0.3s">
+    <!-- Card display area with cyberpunk frame -->
+    <div class="flex-1 flex flex-col items-center justify-center p-4 arcade-border rounded-b-lg m-2" style="background: linear-gradient(180deg, rgba(26, 26, 46, 0.3), rgba(22, 33, 62, 0.3)); position: relative;">
+        <!-- Background grid effect -->
+        <div style="position: absolute; inset: 0; opacity: 0.05; background: repeating-linear-gradient(0deg, rgba(0, 255, 255, 0.1) 0px, transparent 1px, transparent 2px, rgba(0, 255, 255, 0.1) 3px); pointer-events: none;"></div>
+        
+        <div id="card-display" hx-target="this" hx-swap="outerHTML swap:0.3s" style="position: relative; z-index: 1; width: 100%;">
             {% include "components/card.html" %}
         </div>
         
-        <!-- Next Card Button -->
+        <!-- Cyberpunk Next Card Button -->
         <button
             hx-post="/next-card"
             hx-target="#card-display"
-            hx-swap="innerHTML swap:0.3s"
+            hx-swap="outerHTML swap:0.3s"
             class="mt-8 bg-neon-pink text-gray-900 font-bold py-4 px-12 rounded text-xl neon-text 
                    hover:shadow-xl transition-all duration-150 active:scale-95
-                   animate-flashing shadow-xl"
-            style="letter-spacing: 2px;">
-            ▶ NEXT CARD ◀
+                   animate-flashing shadow-xl relative z-10"
+            style="letter-spacing: 3px; text-transform: uppercase; background: linear-gradient(135deg, var(--neon-pink), rgba(255, 0, 153, 0.8)); position: relative;">
+            ▶▶ NEXT CARD ◀◀
         </button>
     </div>
 </div>

@@ -1,14 +1,27 @@
 <div class="arcade-card-container flex items-center justify-center min-h-full">
-    <div class="arcade-card">
+    <!-- 3D Card with flip animation -->
+    <div 
+        class="arcade-card"
+        hx-post="/next-card"
+        hx-target="this"
+        hx-swap="outerHTML swap:0.3s"
+        hx-trigger="click"
+        style="cursor: pointer;">
         <div class="arcade-card-content">
-            <p class="text-center glow-cyan neon-text text-lg leading-relaxed">
-                FIND SOMEONE WHO...
+            <!-- Prompt text with glitch effect -->
+            <p class="text-center glow-cyan neon-text text-lg leading-relaxed" style="font-size: 0.875rem;">
+                ▲ FIND SOMEONE WHO ▲
             </p>
+            <!-- Question box with cyberpunk frame -->
             <div class="arcade-card-question">
-                <p class="text-center glow-lime neon-text text-3xl font-bold">
+                <p class="text-center neon-text text-3xl font-bold">
                     {{ session.get_current_card() }}
                 </p>
             </div>
+            <!-- Tap hint -->
+            <p class="text-center glow-cyan neon-text text-xs" style="opacity: 0.6; font-size: 0.7rem; letter-spacing: 1px;">
+                TAP CARD TO SHUFFLE ►
+            </p>
         </div>
     </div>
 </div>

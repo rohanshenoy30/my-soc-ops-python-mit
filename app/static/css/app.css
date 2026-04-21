@@ -596,35 +596,149 @@ button:active .active\:bg-accent-light { background-color: rgba(255, 0, 153, 0.8
 
 /* ===== CARD DECK SHUFFLE STYLES ===== */
 
-@keyframes card-flip {
+/* Cyberpunk 3D flip animations */
+@keyframes card-flip-in {
     0% {
         opacity: 0;
-        transform: rotateY(90deg) scale(0.8);
+        transform: rotateY(90deg) rotateX(10deg) scale(0.7);
+        filter: blur(10px);
+    }
+    50% {
+        opacity: 0.5;
+        filter: blur(5px);
     }
     100% {
         opacity: 1;
-        transform: rotateY(0deg) scale(1);
+        transform: rotateY(0deg) rotateX(0deg) scale(1);
+        filter: blur(0);
     }
 }
 
-@keyframes card-glow-pulse {
-    0%, 100% {
+@keyframes card-flip-out {
+    0% {
+        opacity: 1;
+        transform: rotateY(0deg) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: rotateY(-90deg) rotateX(-10deg) scale(0.7);
+        filter: blur(10px);
+    }
+}
+
+/* Cyberpunk glow pulse with intensity shifts */
+@keyframes cyberpunk-glow-pulse {
+    0% {
         box-shadow: 
-            0 0 20px rgba(255, 0, 153, 0.5),
-            0 0 40px rgba(255, 0, 153, 0.3),
-            inset 0 0 15px rgba(0, 255, 255, 0.1);
+            0 0 10px rgba(255, 0, 153, 0.3),
+            0 0 30px rgba(0, 255, 255, 0.2),
+            0 0 60px rgba(255, 0, 153, 0.1),
+            inset 0 0 15px rgba(0, 255, 255, 0.05);
+    }
+    25% {
+        box-shadow: 
+            0 0 20px rgba(255, 0, 153, 0.8),
+            0 0 50px rgba(0, 255, 255, 0.5),
+            0 0 100px rgba(255, 0, 153, 0.4),
+            inset 0 0 25px rgba(0, 255, 255, 0.15);
     }
     50% {
         box-shadow: 
-            0 0 40px rgba(255, 0, 153, 0.8),
-            0 0 60px rgba(255, 0, 153, 0.5),
-            inset 0 0 20px rgba(0, 255, 255, 0.2);
+            0 0 30px rgba(0, 255, 255, 0.7),
+            0 0 60px rgba(255, 0, 153, 0.4),
+            0 0 100px rgba(0, 255, 255, 0.2),
+            inset 0 0 20px rgba(255, 0, 153, 0.1);
+    }
+    75% {
+        box-shadow: 
+            0 0 20px rgba(157, 0, 255, 0.6),
+            0 0 50px rgba(0, 255, 255, 0.4),
+            0 0 80px rgba(157, 0, 255, 0.3),
+            inset 0 0 25px rgba(0, 255, 255, 0.1);
+    }
+    100% {
+        box-shadow: 
+            0 0 10px rgba(255, 0, 153, 0.3),
+            0 0 30px rgba(0, 255, 255, 0.2),
+            0 0 60px rgba(255, 0, 153, 0.1),
+            inset 0 0 15px rgba(0, 255, 255, 0.05);
+    }
+}
+
+/* Scan line flicker effect */
+@keyframes scanline-flicker {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.95; }
+}
+
+/* Data stream corruption effect */
+@keyframes data-glitch {
+    0%, 100% {
+        text-shadow: 
+            0 0 10px var(--neon-lime),
+            -2px -2px 0 var(--neon-pink),
+            2px 2px 0 var(--neon-cyan);
+    }
+    50% {
+        text-shadow: 
+            0 0 20px var(--neon-cyan),
+            -2px -2px 0 var(--neon-purple),
+            2px 2px 0 var(--neon-orange);
+    }
+}
+
+/* Border plasma effect */
+@keyframes plasma-border {
+    0% {
+        border-color: var(--neon-pink);
+        filter: hue-rotate(0deg);
+    }
+    33% {
+        border-color: var(--neon-cyan);
+        filter: hue-rotate(60deg);
+    }
+    66% {
+        border-color: var(--neon-purple);
+        filter: hue-rotate(120deg);
+    }
+    100% {
+        border-color: var(--neon-pink);
+        filter: hue-rotate(0deg);
     }
 }
 
 .arcade-card-container {
-    perspective: 1000px;
+    perspective: 1200px;
     padding: 2rem 1rem;
+    position: relative;
+}
+
+/* Cyberpunk background grid accent */
+.arcade-card-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        repeating-linear-gradient(
+            0deg,
+            rgba(0, 255, 255, 0.03),
+            rgba(0, 255, 255, 0.03) 2px,
+            transparent 2px,
+            transparent 4px
+        ),
+        repeating-linear-gradient(
+            90deg,
+            rgba(255, 0, 153, 0.03),
+            rgba(255, 0, 153, 0.03) 2px,
+            transparent 2px,
+            transparent 4px
+        );
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.5;
 }
 
 .arcade-card {
@@ -633,28 +747,90 @@ button:active .active\:bg-accent-light { background-color: rgba(255, 0, 153, 0.8
     max-width: 500px;
     aspect-ratio: 3 / 4;
     margin: 0 auto;
-    background: linear-gradient(135deg, rgba(26, 26, 46, 0.9), rgba(22, 33, 62, 0.9));
-    border: 4px solid var(--neon-pink);
-    border-radius: 1rem;
+    z-index: 2;
+    
+    /* Cyberpunk gradient background */
+    background: 
+        linear-gradient(135deg, rgba(26, 26, 46, 0.95), rgba(22, 33, 62, 0.95)),
+        linear-gradient(45deg, rgba(157, 0, 255, 0.05), transparent);
+    
+    border: 3px solid var(--neon-pink);
+    border-radius: 0.5rem;
+    
+    /* Multi-layered cyberpunk glow */
     box-shadow: 
-        0 0 30px rgba(255, 0, 153, 0.6),
-        0 0 60px rgba(255, 0, 153, 0.3),
-        inset 0 0 20px rgba(0, 255, 255, 0.1);
-    animation: card-glow-pulse 3s ease-in-out infinite, card-flip 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        /* Outer plasma ring */
+        0 0 5px rgba(255, 0, 153, 0.4),
+        0 0 15px rgba(0, 255, 255, 0.3),
+        0 0 30px rgba(255, 0, 153, 0.2),
+        /* Mid-range glow */
+        0 0 50px rgba(255, 0, 153, 0.5),
+        0 0 80px rgba(0, 255, 255, 0.3),
+        /* Far glow */
+        0 0 100px rgba(157, 0, 255, 0.2),
+        /* Inset rim lighting */
+        inset 0 0 20px rgba(0, 255, 255, 0.1),
+        inset -2px -2px 10px rgba(0, 0, 0, 0.5);
+    
+    animation: 
+        cyberpunk-glow-pulse 4s ease-in-out infinite,
+        card-flip-in 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
+        scanline-flicker 0.15s infinite;
+    
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 2rem;
+    padding: 2.5rem;
     cursor: pointer;
-    transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* Smooth depth effect on hover */
+    transition: 
+        transform 150ms cubic-bezier(0.4, 0, 0.2, 1),
+        box-shadow 150ms ease-out;
+    
+    /* Enable 3D transforms */
+    transform-style: preserve-3d;
 }
 
 .arcade-card:hover {
-    transform: scale(1.02);
+    transform: scale(1.03) translateZ(40px);
+    box-shadow: 
+        0 0 10px rgba(255, 0, 153, 0.6),
+        0 0 25px rgba(0, 255, 255, 0.5),
+        0 0 50px rgba(255, 0, 153, 0.4),
+        0 0 80px rgba(0, 255, 255, 0.2),
+        0 0 120px rgba(157, 0, 255, 0.15),
+        inset 0 0 30px rgba(0, 255, 255, 0.2);
 }
 
 .arcade-card:active {
-    transform: scale(0.98);
+    transform: scale(0.97);
+}
+
+/* Cyberpunk card corner accents */
+.arcade-card::before,
+.arcade-card::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--neon-cyan);
+    opacity: 0.7;
+    animation: plasma-border 6s ease-in-out infinite;
+}
+
+.arcade-card::before {
+    top: -8px;
+    left: -8px;
+    border-right: none;
+    border-bottom: none;
+}
+
+.arcade-card::after {
+    bottom: -8px;
+    right: -8px;
+    border-left: none;
+    border-top: none;
 }
 
 .arcade-card-content {
@@ -665,6 +841,17 @@ button:active .active\:bg-accent-light { background-color: rgba(255, 0, 153, 0.8
     gap: 2rem;
     text-align: center;
     width: 100%;
+    position: relative;
+    z-index: 1;
+    /* 3D depth */
+    transform-style: preserve-3d;
+}
+
+.arcade-card-content > p:first-child {
+    font-size: 0.875rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    animation: data-glitch 3s ease-in-out infinite;
 }
 
 .arcade-card-question {
@@ -673,12 +860,43 @@ button:active .active\:bg-accent-light { background-color: rgba(255, 0, 153, 0.8
     align-items: center;
     justify-content: center;
     min-height: 150px;
+    position: relative;
+    width: 100%;
+}
+
+/* Cyberpunk question box styling */
+.arcade-card-question::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 2px solid var(--neon-lime);
+    border-radius: 0.25rem;
+    box-shadow: 
+        inset 0 0 15px rgba(0, 255, 0, 0.1),
+        0 0 20px rgba(0, 255, 0, 0.2);
+    opacity: 0.3;
+    animation: cyberpunk-glow-pulse 4s ease-in-out infinite;
 }
 
 .arcade-card-question p {
     margin: 0;
-    line-height: 1.4;
-    animation: wobble 2s ease-in-out infinite;
+    line-height: 1.5;
+    position: relative;
+    z-index: 2;
+    
+    /* Advanced neon text effect */
+    color: var(--neon-lime);
+    text-shadow: 
+        0 0 10px var(--neon-lime),
+        0 0 20px var(--neon-lime),
+        0 0 30px rgba(0, 255, 0, 0.5),
+        0 0 50px rgba(0, 255, 255, 0.3),
+        -1px -1px 0 var(--neon-cyan),
+        1px 1px 0 var(--neon-pink);
+    
+    animation: wobble 2.5s ease-in-out infinite;
+    font-weight: 700;
+    letter-spacing: 1px;
 }
 
 /* ===== ACCESSIBILITY: Reduce Motion ===== */
