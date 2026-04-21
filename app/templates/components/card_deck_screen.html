@@ -1,0 +1,40 @@
+<div id="game-container">
+<div class="flex flex-col min-h-full">
+    <!-- Header -->
+    <header class="flex items-center justify-between p-3 arcade-border rounded-t-lg border-b border-gray-300">
+        <button
+            hx-post="/reset"
+            hx-target="#game-container"
+            hx-swap="outerHTML"
+            class="text-neon-cyan text-sm px-3 py-1.5 rounded neon-text font-bold hover:glow-cyan transition-all">
+            ◀ BACK
+        </button>
+        <h1 class="font-bold glow-pink neon-text text-lg">CARD DECK SHUFFLE</h1>
+        <div class="w-16"></div>
+    </header>
+
+    <!-- Instructions -->
+    <p class="text-center glow-cyan text-sm py-2 px-4 neon-text">
+        TAP CARD OR BUTTON TO SHUFFLE
+    </p>
+
+    <!-- Card display area -->
+    <div class="flex-1 flex flex-col items-center justify-center p-4 arcade-border rounded-b-lg m-2">
+        <div id="card-display" hx-target="this" hx-swap="innerHTML swap:0.3s">
+            {% include "components/card.html" %}
+        </div>
+        
+        <!-- Next Card Button -->
+        <button
+            hx-post="/next-card"
+            hx-target="#card-display"
+            hx-swap="innerHTML swap:0.3s"
+            class="mt-8 bg-neon-pink text-gray-900 font-bold py-4 px-12 rounded text-xl neon-text 
+                   hover:shadow-xl transition-all duration-150 active:scale-95
+                   animate-flashing shadow-xl"
+            style="letter-spacing: 2px;">
+            ▶ NEXT CARD ◀
+        </button>
+    </div>
+</div>
+</div>

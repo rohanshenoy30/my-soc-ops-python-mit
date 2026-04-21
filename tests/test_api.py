@@ -17,7 +17,7 @@ class TestHomePage:
     def test_home_contains_start_screen(self, client: TestClient):
         response = client.get("/")
         assert "Soc Ops" in response.text
-        assert "START GAME" in response.text
+        assert "CHOOSE YOUR MODE" in response.text
         assert "SOCIAL BINGO" in response.text
 
     def test_home_sets_session_cookie(self, client: TestClient):
@@ -54,10 +54,10 @@ class TestToggleSquare:
 class TestResetGame:
     def test_reset_returns_start_screen(self, client: TestClient):
         client.get("/")
-        client.post("/start")
+        client.post("/start/bingo")
         response = client.post("/reset")
         assert response.status_code == 200
-        assert "START GAME" in response.text
+        assert "CHOOSE YOUR MODE" in response.text
         assert "SOCIAL BINGO" in response.text
 
 
@@ -130,8 +130,7 @@ class TestToggleScavengerItem:
         client.get("/")
         client.post("/start/scavenger_hunt")
         # Initial progress: 0/24
-        response1 = client.post("/start/scavenger_hunt")
-        initial_text = response1.text
+        client.post("/start/scavenger_hunt")
         # Toggle an item
         response2 = client.post("/toggle/0")
         # Progress should update to 1/24 (or similar)

@@ -8,9 +8,14 @@ BOARD_SIZE = 5
 CENTER_INDEX = 12  # 5x5 grid, center is index 12 (row 2, col 2)
 
 
+def _sample_questions(count: int) -> list[str]:
+    """Sample without replacement from QUESTIONS list."""
+    return random.sample(QUESTIONS, count)
+
+
 def generate_board() -> list[BingoSquareData]:
     """Generate a new 5x5 bingo board."""
-    questions = iter(random.sample(QUESTIONS, 24))
+    questions = iter(_sample_questions(24))
     return [
         BingoSquareData(id=i, text=FREE_SPACE, is_marked=True, is_free_space=True)
         if i == CENTER_INDEX
@@ -21,10 +26,9 @@ def generate_board() -> list[BingoSquareData]:
 
 def generate_scavenger_items() -> list[ScavengerItem]:
     """Generate a new scavenger hunt items list (24 items, no free space)."""
-    questions = random.sample(QUESTIONS, 24)
     return [
         ScavengerItem(id=str(i), text=question, is_marked=False)
-        for i, question in enumerate(questions)
+        for i, question in enumerate(_sample_questions(24))
     ]
 
 

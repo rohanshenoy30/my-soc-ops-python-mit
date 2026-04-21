@@ -1,5 +1,7 @@
+import random
 from dataclasses import dataclass, field
 
+from app.data import QUESTIONS
 from app.game_logic import (
     check_bingo,
     generate_board,
@@ -26,6 +28,8 @@ class GameSession:
     scavenger_items: list[ScavengerItem] = field(default_factory=list)
     winning_line: BingoLine | None = None
     show_bingo_modal: bool = False
+    card_questions: list[str] = field(default_factory=list)
+    current_card_index: int = 0
 
     @property
     def winning_square_ids(self) -> set[int]:
@@ -35,21 +39,40 @@ class GameSession:
     def has_bingo(self) -> bool:
         return self.game_state == GameState.BINGO
 
+    def _reset_state(self) -> None:
+        """Reset common game state fields."""
+        self.winning_line = None
+        self.show_bingo_modal = False
+
+    def _is_mode_playing(self, expected_mode: GameMode) -> bool:
+        """Check if the game is in PLAYING state with the expected mode."""
+        return self.game_state == GameState.PLAYING and self.game_mode == expected_mode
+
     def start_game(self, mode: GameMode = GameMode.BINGO) -> None:
         self.game_mode = mode
         self.game_state = GameState.PLAYING
-        self.winning_line = None
-        self.show_bingo_modal = False
+        self._reset_state()
 
         if mode == GameMode.BINGO:
             self.board = generate_board()
             self.scavenger_items = []
-        else:  # SCAVENGER_HUNT
+            self.card_questions = []
+            self.current_card_index = 0
+        elif mode == GameMode.SCAVENGER_HUNT:
             self.scavenger_items = generate_scavenger_items()
             self.board = []
+            self.card_questions = []
+            self.current_card_index = 0
+        elif mode == GameMode.CARD_DECK_SHUFFLE:
+            # Shuffle all questions for random deck
+            self.card_questions = QUESTIONS.copy()
+            random.shuffle(self.card_questions)
+            self.current_card_index = 0
+            self.board = []
+            self.scavenger_items = []
 
     def handle_square_click(self, square_id: int) -> None:
-        if self.game_state != GameState.PLAYING or self.game_mode != GameMode.BINGO:
+        if not self._is_mode_playing(GameMode.BINGO):
             return
         self.board = toggle_square(self.board, square_id)
 
@@ -61,10 +84,7 @@ class GameSession:
                 self.show_bingo_modal = True
 
     def handle_scavenger_toggle(self, item_id: str) -> None:
-        if (
-            self.game_state != GameState.PLAYING
-            or self.game_mode != GameMode.SCAVENGER_HUNT
-        ):
+        if not self._is_mode_playing(GameMode.SCAVENGER_HUNT):
             return
         self.scavenger_items = [
             item.model_copy(update={"is_marked": not item.is_marked})
@@ -84,12 +104,28 @@ class GameSession:
         self.board = []
         self.scavenger_items = []
         self.game_mode = GameMode.BINGO
-        self.winning_line = None
-        self.show_bingo_modal = False
+        self._reset_state()
 
     def dismiss_modal(self) -> None:
         self.show_bingo_modal = False
         self.game_state = GameState.PLAYING
+
+    def get_current_card(self) -> str:
+        """Get the current card question."""
+        if not self._is_mode_playing(GameMode.CARD_DECK_SHUFFLE):
+            return ""
+        if 0 <= self.current_card_index < len(self.card_questions):
+            return self.card_questions[self.current_card_index]
+        return ""
+
+    def next_card(self) -> str:
+        """Advance to the next card. Cycles back to start if at the end."""
+        if not self._is_mode_playing(GameMode.CARD_DECK_SHUFFLE):
+            return ""
+        self.current_card_index = (self.current_card_index + 1) % len(
+            self.card_questions
+        )
+        return self.get_current_card()
 
 
 # In-memory session store keyed by session ID
